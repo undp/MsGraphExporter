@@ -1,0 +1,47 @@
+# Sensitive configuration
+instance/
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Git repo metadata
+.git/
+.gitignore
+
+# test / benchmark / coverage reports
+.benchmarks/
+.pytest_cache/
+.tox/
+.coverage
+.coverage.*
+htmlcov/
+tests/
+
+# Distribution / packaging
+*.egg-info/
+*.egg
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# IDEs
+.vscode/
+
+# Documentation
+docs/
+CHANGELOG.md
+CONTRIBUTING.md
+LICENSE.md
+README.md
+
+# project files
+.bumpversion.cfg
+.gitchangelog.rc
+.gitignore
+.pre-commit-config.yaml
+.python-version
+tox.ini
