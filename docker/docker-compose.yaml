@@ -1,0 +1,59 @@
+version: "3.7"
+
+services:
+  flower:  
+    image: mher/flower
+    depends_on:
+      - redis
+    ports:  
+      - 8888:8888
+    environment:
+      CELERY_BROKER_URL: redis://redis:6379/0
+      FLOWER_PORT: 8888
+
+  redis:
+    image: redis:5.0.5-alpine
+    ports:  
+      - 6379:6379
+
+  ms_graph_exporter_beat:
+    build:
+      context: ../
+      dockerfile: docker/MsGraphExporter.Dockerfile
+    image: msgraphexporter:0.1.0-rc0
+    command: ["msgraphexporter", "--beat"]
+    depends_on:
+      - redis
+    environment:
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_BEAT_LOG_LEVEL: WARN
+
+  ms_graph_exporter_map:
+    image: msgraphexporter:0.1.0-rc0
+    command: ["msgraphexporter", "--map"]
+    depends_on:
+      - ms_graph_exporter_beat
+    environment:
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_WORKER_LOG_LEVEL: WARN
+
+  ms_graph_exporter_fetch:
+    image: msgraphexporter:0.1.0-rc0
+    command: ["msgraphexporter", "--fetch"]
+    depends_on:
+      - ms_graph_exporter_beat
+    environment:
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_WORKER_LOG_LEVEL: WARN
+      GRAPH_TENANT: ${GRAPH_TENANT}
+      GRAPH_CLIENT_ID: ${GRAPH_CLIENT_ID}
+      GRAPH_CLIENT_SECRET: ${GRAPH_CLIENT_SECRET}
+
+  ms_graph_exporter_store:
+    image: msgraphexporter:0.1.0-rc0
+    command: ["msgraphexporter", "--store"]
+    depends_on:
+      - ms_graph_exporter_beat
+    environment:
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_WORKER_LOG_LEVEL: WARN
