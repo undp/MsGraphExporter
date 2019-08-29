@@ -12,7 +12,7 @@ exclude = '''
 
 [tool.poetry]
 name = "ms-graph-exporter"
-version = "0.1.0-rc.0"
+version = "0.1.0-rc.1"
 description = """A distributed Celery application to export time-domain data 
 periodically from Microsoft Graph API into a buffer key-value store."""
 
