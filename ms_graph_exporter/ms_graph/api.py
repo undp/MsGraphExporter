@@ -422,7 +422,7 @@ class MsGraph:
         odata_filter: str = None,
         page_size: int = None,
         cache_enabled: bool = False,
-    ) -> Optional["api_response.MsGraphResponse"]:
+    ) -> "api_response.MsGraphResponse":
         """Query MS Graph API.
 
         Perform authenticated request to MS Graph ``resource`` with ``odata_filter``.
@@ -459,13 +459,13 @@ class MsGraph:
 
         Returns
         -------
-        :obj:`~typing.Optional` [:obj:`~ms_graph_exporter.ms_graph.response.MsGraphResponse`]
+        :obj:`~ms_graph_exporter.ms_graph.response.MsGraphResponse`
             Response which (depending on the ``page_size``) would either contain
             a full set of returned records, or just the first batch cached and an
             iterator to get all the subsequent paginated results. If there is a query
             error, returns :obj:`None`.
 
-        """  # noqa: E501
+        """
         query_api_url: str = "{api_endpoint}/{version}/{resource}".format(
             api_endpoint=self.__api_endpoint,
             version=self.__api_version,
@@ -489,17 +489,12 @@ class MsGraph:
             api_url=query_api_url, params=query_api_params
         )
 
-        # TODO:REFACTOR:20190827:01
-        #   Instantiate MsGraphResponse() anyway, but provide `initial_data=None`,
-        #   if `status_code != 200`
-        #
-        if response.status_code == 200:
-            msgraph_results = api_response.MsGraphResponse(
-                ms_graph=self,
-                initial_data=response.json(),
-                initial_url=response.url,
-                cache_enabled=cache_enabled,
-            )
+        msgraph_results = api_response.MsGraphResponse(
+            ms_graph=self,
+            initial_data=response.json() if response.status_code == 200 else None,
+            initial_url=response.url,
+            cache_enabled=cache_enabled,
+        )
 
         return msgraph_results
 
