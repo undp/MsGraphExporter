@@ -27,11 +27,11 @@ class MsGraphResponse:
         Channel to be used for log output specific to the module.
 
     _cache: :obj:`~typing.Dict` [:obj:`str`, :obj:`~typing.Optional` [:obj:`~typing.Dict` [:obj:`str`, :obj:`~typing.Any`]]]
-        Dictionary holding URLs paged through or queried if no pagination
-        is required and, optionally, responses received.
+        Dictionary holding URLs queried and corresponding results received
+        (if caching enabled), including URLs paged through with meth:`__next__`.
 
     _cache_enabled : :obj:`bool`
-        Flag indicating if response data should be cached (``True``)
+        Flag indicating if received data should be cached (``True``)
         or not (``False``).
 
     _complete : :obj:`bool`
@@ -41,6 +41,9 @@ class MsGraphResponse:
 
     _data_page: :obj:`~typing.List` [:obj:`~typing.Dict` [:obj:`str`, :obj:`~typing.Any`]]
         Last data batch fetched from the API.
+
+    _initial_url : :obj:`str`
+        URL to retrieve the initial data batch.
 
     _ms_graph : :obj:`~ms_graph_exporter.ms_graph.api.MsGraph`
         API instance to be used for queries.
@@ -63,6 +66,8 @@ class MsGraphResponse:
 
     _data_page: List[Dict[str, Any]]
 
+    _initial_url: str = "<undefined>"
+
     _ms_graph: "api.MsGraph"
 
     _next_stop: bool = False
@@ -74,7 +79,7 @@ class MsGraphResponse:
     def __init__(
         self,
         ms_graph: "api.MsGraph",
-        initial_data: Dict[str, Any],
+        initial_data: Optional[Dict[str, Any]],
         initial_url: str,
         cache_enabled: bool = False,
     ) -> None:
@@ -102,6 +107,8 @@ class MsGraphResponse:
 
         self._cache_enabled = cache_enabled
 
+        self._initial_url = initial_url
+
         self._ms_graph = ms_graph
 
         self._update(initial_data, initial_url)
@@ -116,7 +123,17 @@ class MsGraphResponse:
         return "MsGraphResponse[{}]".format(self._uuid)
 
     def __iter__(self):
-        """Return the object itself as iterator."""
+        """Provide iterator for object.
+
+        Prepares internal state for iteration from the beginning
+        of the data set and returns object itself as an iterator.
+
+        """
+        if self._complete:
+            self._next_stop = False
+            self._next_url = self._initial_url
+            self._prefetch_next()
+
         return self
 
     def __next__(self) -> List[Dict[str, Any]]:
@@ -125,7 +142,7 @@ class MsGraphResponse:
         if self._next_stop:
             raise StopIteration
         else:
-            if self._complete:
+            if self._next_url == "":
                 self._next_stop = True
 
             old_data: List = self._data_page
@@ -136,7 +153,7 @@ class MsGraphResponse:
                 "%s: [__next__]: pulled: %s records", self, len(old_data)
             )
             self.__logger.debug(
-                "%s: [__next__]: complete flag: %s", self, self._complete
+                "%s: [__next__]: complete flag: %s", self, self._next_url == ""
             )
             self.__logger.debug(
                 "%s: [__next__]: next_stop flag: %s", self, self._next_stop
@@ -150,28 +167,27 @@ class MsGraphResponse:
         Prefetch next data batch, if more paginated records are available.
 
         """
-        if not self._complete:
-            response: Response = self._ms_graph._http_get_with_auth(self._next_url)
+        if self._next_url != "":
+            cached_data: Optional[Dict[str, Any]] = self._cache.get(
+                self._next_url, None
+            )
 
-            if response.status_code == 200:
-                response_data: Dict[str, Any] = response.json()
+            if cached_data:
+                response_data: Dict[str, Any] = cached_data
+            else:
+                response: Response = self._ms_graph._http_get_with_auth(self._next_url)
+                response_data = response.json()
 
-                self._update(response_data, response.url)
+            self._update(response_data, self._next_url)
 
-                self.__logger.info(
-                    "%s: Prefetched next %s records", self, len(response_data["value"])
-                )
+            self.__logger.debug(
+                "%s: Prefetched next %s records %s",
+                self,
+                len(response_data.get("value", None)),
+                "from cache" if cached_data else "",
+            )
 
-    def _push_to_cache(self, api_response: Dict[str, Any], query_url: str) -> None:
-        """Update cache.
-
-        Save ``api_response``, if ``query_url`` is not yet committed to cache.
-
-        """
-        if query_url not in self._cache:
-            self._cache[query_url] = api_response if self._cache_enabled else None
-
-    def _update(self, api_response: Dict[str, Any], query_url: str) -> None:
+    def _update(self, api_response: Optional[Dict[str, Any]], query_url: str) -> None:
         """Update internal state.
 
         Save the latest ``api_response`` received, ensure consistency
@@ -184,14 +200,17 @@ class MsGraphResponse:
             with response data must reside (even if empty).
 
         """
-        if "value" in api_response:
+        if query_url not in self._cache:
+            self._cache[query_url] = api_response if self._cache_enabled else None
+
+        if (api_response is not None) and ("value" in api_response):
             self._data_page = api_response["value"]
 
             self._next_url = api_response.get("@odata.nextLink", "")
 
-            self._complete = self._next_url == ""
+            if not self._complete:
+                self._complete = self._next_url == ""
 
-            self._push_to_cache(api_response, query_url)
         else:
             self.__logger.exception(
                 "%s: Exception: 'api_response' must have 'value' key present", self
