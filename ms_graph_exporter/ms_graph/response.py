@@ -54,6 +54,13 @@ class MsGraphResponse:
     _uuid : :obj:`str`
         Universally unique identifier of the class instance to be used in logging.
 
+    Note
+    ----
+    Even if caching is disabled, but response contains a single page which has been
+    retrieved and provided at instantiation of :class:`MsGraphResponse`, the data
+    is taken from memory for subsequent iterations with meth:`__iter__` and
+    meth:`__next__` and not re-requested.
+
     """  # noqa: E501
 
     __logger: Logger = getLogger(__name__)
@@ -129,10 +136,22 @@ class MsGraphResponse:
         of the data set and returns object itself as an iterator.
 
         """
+        self.__logger.debug("%s: [__iter__]: Invoked", self)
+
+        # if response has either a single page or multiple pages fully iterated once
         if self._complete:
+            # if response has multiple pages fully iterated once
+            if len(self._cache) > 1:
+                self.__logger.debug(
+                    "%s: [__iter__]: reset '_next_url' to '_initial_url'", self
+                )
+                self._next_url = self._initial_url
+
+                self.__logger.debug("%s: [__iter__]: prefetch initial data page", self)
+                self._prefetch_next()
+
+            self.__logger.debug("%s: [__iter__]: reset iterator", self)
             self._next_stop = False
-            self._next_url = self._initial_url
-            self._prefetch_next()
 
         return self
 
@@ -152,12 +171,8 @@ class MsGraphResponse:
             self.__logger.debug(
                 "%s: [__next__]: pulled: %s records", self, len(old_data)
             )
-            self.__logger.debug(
-                "%s: [__next__]: complete flag: %s", self, self._next_url == ""
-            )
-            self.__logger.debug(
-                "%s: [__next__]: next_stop flag: %s", self, self._next_stop
-            )
+            self.__logger.debug("%s: [__next__]: next_url: %s", self, self._next_url)
+            self.__logger.debug("%s: [__next__]: next_stop: %s", self, self._next_stop)
 
             return old_data
 
@@ -203,16 +218,17 @@ class MsGraphResponse:
         if query_url not in self._cache:
             self._cache[query_url] = api_response if self._cache_enabled else None
 
-        if (api_response is not None) and ("value" in api_response):
-            self._data_page = api_response["value"]
+        if api_response is not None:
+            if "value" in api_response:
+                self._data_page = api_response["value"]
 
-            self._next_url = api_response.get("@odata.nextLink", "")
+                self._next_url = api_response.get("@odata.nextLink", "")
 
-            if not self._complete:
-                self._complete = self._next_url == ""
+                if not self._complete:
+                    self._complete = self._next_url == ""
 
-        else:
-            self.__logger.exception(
-                "%s: Exception: 'api_response' must have 'value' key present", self
-            )
-            raise ValueError("'api_response' must have 'value' key present")
+            else:
+                self.__logger.exception(
+                    "%s: Exception: 'api_response' must have 'value' key present", self
+                )
+                raise ValueError("'api_response' must have 'value' key present")
