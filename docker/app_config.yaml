@@ -16,38 +16,38 @@
 # to call the MS Graph API resides.
 # (GRAPH_TENANT)
 #
-tenant: ""
+# tenant: ""
 
 # ClientId of the Service Principal with access to MS Graph API.
 # (GRAPH_CLIENT_ID)
 #
-client_id: ""
+# client_id: ""
 
 # ClientSecret of the Service Principal with access to MS Graph API.
 # (GRAPH_CLIENT_SECRET)
 #
-client_secret: ""
+# client_secret: ""
 
 # Seconds to shift back the query time-frame for each of the periodic
 # invocations of the parallelized extraction process.
 # (GRAPH_TIMELAG)
 #
-timelag: 120
+# timelag: 120
 
 # Number of parallel streams to fetch time-domain data.
 # (GRAPH_STREAMS)
 #
-streams: 2
+# streams: 2
 
 # Time-domain size of the data request for each stream (seconds).
 # (GRAPH_STREAM_FRAME)
 #
-stream_frame: 30
+# stream_frame: 30
 
 # Number of records to request from the MS Graph API in a single response.
 # (GRAPH_PAGE_SIZE)
 #
-page_size: 50
+# page_size: 50
 
 # Backend type to store exported data. Accepts either `redis` or `log`.
 # If set to `redis`, expects `queue_type`, `queue_key` and `redis_url`
@@ -55,7 +55,7 @@ page_size: 50
 # records to Celery Worker log under severity INFO.
 # (GRAPH_QUEUE_BACKEND)
 #
-queue_backend: redis
+# queue_backend: redis
 
 # Storage queue implementation type. Accepts either `list` or `channel`.
 # If set to `list`, all records are accumulated for further processing.
@@ -63,12 +63,12 @@ queue_backend: redis
 # automatic relaying to all subscribers.
 # (GRAPH_QUEUE_TYPE)
 #
-queue_type: list
+# queue_type: list
 
 # Name of the CHANNEL or LIST where extracted data is pushed.
 # (GRAPH_QUEUE_KEY)
 #
-queue_key: ms_graph_exporter
+# queue_key: ms_graph_exporter
 
 # Connection string for Redis client. Follows `reids-py` URL schema with
 # `redis://` for regular Redis instance and `rediss://` for TLS. In case
@@ -76,7 +76,7 @@ queue_key: ms_graph_exporter
 # where `<password>` is URL-encoded.
 # (GRAPH_REDIS_URL)
 #
-redis_url: redis://localhost:6379?db=0
+# redis_url: redis://localhost:6379?db=0
 
 # Maximum number of Greenlets to spawn for each data upload task. Storage
 # task splits list of records into the appropriate amount of chunks not
@@ -84,27 +84,27 @@ redis_url: redis://localhost:6379?db=0
 # and spawns each chunk upload as a Greenlet co-routine.
 # (GRAPH_GREENLETS_COUNT)
 #
-greenlets_count: 10
+# greenlets_count: 10
 
 # Enable/disable threat-safe blocking in Redis connection pool.
 # (GRAPH_REDIS_POOL_BLOCK)
 #
-redis_pool_block: True
+# redis_pool_block: True
 
 # Enable/disable `gevent.queue.LifoQueue` usage in Redis connection pool.
 # (GRAPH_REDIS_POOL_GEVENT_QUEUE)
 #
-redis_pool_gevent_queue: True
+# redis_pool_gevent_queue: True
 
 # Maximum number of reusable connections maintained by the connection pool
 # of the Redis client.
 # (GRAPH_REDIS_POOL_MAX_CONNECTIONS)
 #
-redis_pool_max_connections: 15
+# redis_pool_max_connections: 15
 
 # Time that blocking-enabled Redis client waits for connection to become
 # available from the exhausted connection pool (seconds). Afterwards, raises
 # Redis ConnectionError exception.
 # (GRAPH_REDIS_POOL_TIMEOUT)
 #
-redis_pool_timeout: 1
+# redis_pool_timeout: 1
