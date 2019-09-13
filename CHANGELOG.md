@@ -1,6 +1,44 @@
 # Changelog
 
 
+## 0.1.0-rc.2 (2019-09-12)
+
+### New
+
+* Publish docs on RTD (fixes #5). [OK-UNDP]
+
+  Provide `.readthedocs.yaml` for RTD build environment.
+
+  Change `description` in `pyproject.toml` to single-line format to address sdispater/poetry#1372
+
+  Apply minor doc fixes.
+
+  !wip
+
+  !wip
+
+### Fix
+
+* Gevent monkey patching (fixes #6). [OK-UNDP]
+
+  Ensure `gevent` monkey patching is performed
+  only for tests requiring it.
+
+* Read-only docker image (fixes #4). [OK-UNDP]
+
+  Ensure all PID files are placed in `/tmp`. Provide an example
+  `docker-compose.yaml` demonstrating how to deploy workers as
+  read-only images with `tmpfs` volume mounted to `/tmp`.
+
+* Empty `app_config.yaml` (fixes #3). [OK-UNDP]
+
+  Properly handle empty or comments-only `app_config.yaml`.
+
+* MsGraphResponse iterator (fixes #2). [OK-UNDP]
+
+  Refactoring that allows `MsGraphResponse` to be repeatedly iterated.
+
+
 ## 0.1.0-rc.1 (2019-08-29)
 
 ### New

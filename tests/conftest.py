@@ -2,10 +2,6 @@
 """Module defines common test fixtures."""
 from logging import getLogger
 
-# fmt: off
-from gevent.monkey import patch_all; patch_all()  # noqa: E702
-# fmt: on
-
 import pytest
 
 

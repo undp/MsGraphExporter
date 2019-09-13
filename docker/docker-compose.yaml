@@ -19,26 +19,38 @@ services:
   ms_graph_exporter_beat:
     build:
       context: ../
-      dockerfile: docker/MsGraphExporter.Dockerfile
-    image: msgraphexporter:0.1.0-rc0
+      dockerfile: docker/Dockerfile
+    image: msgraphexporter:0.1.0-rc.1
     command: ["msgraphexporter", "--beat"]
     depends_on:
       - redis
     environment:
       CELERY_BROKER_URL: redis://redis:6379/0
       CELERY_BEAT_LOG_LEVEL: WARN
+    read_only: true
+    volumes:
+      - type: tmpfs
+        target: /tmp
+        tmpfs:
+          size: 1000000  # 1MB
 
   ms_graph_exporter_map:
-    image: msgraphexporter:0.1.0-rc0
+    image: msgraphexporter:0.1.0-rc.1
     command: ["msgraphexporter", "--map"]
     depends_on:
       - ms_graph_exporter_beat
     environment:
       CELERY_BROKER_URL: redis://redis:6379/0
       CELERY_WORKER_LOG_LEVEL: WARN
+    read_only: true
+    volumes:
+      - type: tmpfs
+        target: /tmp
+        tmpfs:
+          size: 1000000  # 1MB
 
   ms_graph_exporter_fetch:
-    image: msgraphexporter:0.1.0-rc0
+    image: msgraphexporter:0.1.0-rc.1
     command: ["msgraphexporter", "--fetch"]
     depends_on:
       - ms_graph_exporter_beat
@@ -48,12 +60,28 @@ services:
       GRAPH_TENANT: ${GRAPH_TENANT}
       GRAPH_CLIENT_ID: ${GRAPH_CLIENT_ID}
       GRAPH_CLIENT_SECRET: ${GRAPH_CLIENT_SECRET}
+    read_only: true
+    volumes:
+      - type: tmpfs
+        target: /tmp
+        tmpfs:
+          size: 1000000  # 1MB
 
   ms_graph_exporter_store:
-    image: msgraphexporter:0.1.0-rc0
+    build:
+      context: ../
+      dockerfile: docker/Dockerfile
+    image: msgraphexporter:0.1.0-rc.1
     command: ["msgraphexporter", "--store"]
     depends_on:
       - ms_graph_exporter_beat
     environment:
       CELERY_BROKER_URL: redis://redis:6379/0
       CELERY_WORKER_LOG_LEVEL: WARN
+      GRAPH_REDIS_URL: redis://redis:6379/0
+    read_only: true
+    volumes:
+      - type: tmpfs
+        target: /tmp
+        tmpfs:
+          size: 1000000  # 1MB

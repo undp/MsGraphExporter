@@ -1,10 +1,12 @@
 # MsGraphExporter
 
- [![Python 3.6+](https://img.shields.io/badge/Python-3.6+-blue.svg)][PythonRef] [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)][BlackRef] [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)][MITRef]
+[![Python 3.6+](https://img.shields.io/badge/Python-3.6+-blue.svg)][PythonRef] [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)][BlackRef] [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)][MITRef]
+[![ReadTheDocs](https://readthedocs.org/projects/msgraphexporter/badge/?version=latest)][DocsRef]
 
 [PythonRef]: https://docs.python.org/3.6/
 [BlackRef]: https://github.com/ambv/black
 [MITRef]: https://opensource.org/licenses/MIT
+[DocsRef]: https://msgraphexporter.readthedocs.io/en/latest/
 
 `MsGraphExporter` is an application that performs periodic export of time-domain data like Azure AD user signins from [Microsoft Graph API][MsGraphApiDoc] into a buffer key-value store (currently supports [Redis][RedisRef]) for subsequent processing. It uses [Celery][CeleryProjectRef] task queue for parallel processing, [gevent][GeventRef] greenlets for concurrent uploads, relies on the [Graph API pagination][MsGraphApiPage] to control memory footprint and respects [Graph API throttling][MsGraphApiThrottle]. The application could be deployed as a single-container worker or as a set of multiple queue-specific workers for high reliability and throughput.
 

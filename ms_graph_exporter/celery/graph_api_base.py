@@ -126,22 +126,24 @@ class GraphApiTask(Task):
 
             cls._config["graph_app_config"] = config_file
 
+            config_yaml: Dict = {}
             with open(config_file, "r") as f:
                 try:
-                    config_yaml: Dict = safe_load(f)
+                    config_yaml = safe_load(f)
                 except YAMLError:
                     cls._logger.exception(
                         "Exception loading config file '%s'", config_file
                     )
 
-            config_update = {
-                "graph_{}".format(k): config_yaml.get(k, None)
-                for k in config_yaml.keys()
-            }
+            if config_yaml:
+                config_update = {
+                    "graph_{}".format(k): config_yaml.get(k, None)
+                    for k in config_yaml.keys()
+                }
 
-            cls._config.update(config_update)
+                cls._config.update(config_update)
 
-            cls._logger.debug("[%s]: Final config: %s", cls.__name__, cls._config)
+                cls._logger.debug("[%s]: Final config: %s", cls.__name__, cls._config)
 
     @property
     def graph(self) -> MsGraph:
