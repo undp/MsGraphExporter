@@ -28,7 +28,7 @@ class MsGraphResponse:
 
     _cache: :obj:`~typing.Dict` [:obj:`str`, :obj:`~typing.Optional` [:obj:`~typing.Dict` [:obj:`str`, :obj:`~typing.Any`]]]
         Dictionary holding URLs queried and corresponding results received
-        (if caching enabled), including URLs paged through with meth:`__next__`.
+        (if caching enabled), including URLs paged through with :meth:`__next__`.
 
     _cache_enabled : :obj:`bool`
         Flag indicating if received data should be cached (``True``)
@@ -58,8 +58,8 @@ class MsGraphResponse:
     ----
     Even if caching is disabled, but response contains a single page which has been
     retrieved and provided at instantiation of :class:`MsGraphResponse`, the data
-    is taken from memory for subsequent iterations with meth:`__iter__` and
-    meth:`__next__` and not re-requested.
+    is taken from memory for subsequent iterations with :meth:`__iter__` and
+    :meth:`__next__` and not re-requested.
 
     """  # noqa: E501
 

@@ -355,7 +355,6 @@ class MsGraph:
                 params_log,
             )
 
-            # REFACTOR?: Decouple Session() from MsGraph
             response: Response = self.http_session.get(
                 api_url, headers=headers, params=params, timeout=(3, 30)
             )
@@ -462,8 +461,7 @@ class MsGraph:
         :obj:`~ms_graph_exporter.ms_graph.response.MsGraphResponse`
             Response which (depending on the ``page_size``) would either contain
             a full set of returned records, or just the first batch cached and an
-            iterator to get all the subsequent paginated results. If there is a query
-            error, returns :obj:`None`.
+            iterator to get all the subsequent paginated results.
 
         """
         query_api_url: str = "{api_endpoint}/{version}/{resource}".format(
