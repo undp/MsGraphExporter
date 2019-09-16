@@ -26,7 +26,7 @@ from ms_graph_exporter.ms_graph.response import MsGraphResponse
 
 
 class GraphApiTask(Task):
-    r"""Base class for MS Graph API data extraction Celery tasks.
+    """Base class for MS Graph API data extraction Celery tasks.
 
     Allows to share instances of Redis connection pool
     :class:`BlockingConnectionPool <redis:redis.BlockingConnectionPool>`

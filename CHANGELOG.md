@@ -54,5 +54,3 @@
 * Implement functional test for MS Graph API. [OK-UNDP]
 
 * Implement MS Graph API module. [OK-UNDP]
-
-

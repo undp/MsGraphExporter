@@ -1,11 +1,11 @@
 version: "3.7"
 
 services:
-  flower:  
+  flower:
     image: mher/flower
     depends_on:
       - redis
-    ports:  
+    ports:
       - 8888:8888
     environment:
       CELERY_BROKER_URL: redis://redis:6379/0
@@ -13,7 +13,7 @@ services:
 
   redis:
     image: redis:5.0.5-alpine
-    ports:  
+    ports:
       - 6379:6379
 
   ms_graph_exporter_beat:

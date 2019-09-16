@@ -504,7 +504,7 @@ class MsGraph:
         page_size: int = None,
         cache_enabled: bool = False,
     ) -> Optional["api_response.MsGraphResponse"]:
-        r"""Get Azure AD signin log records from MS Graph API.
+        """Get Azure AD signin log records from MS Graph API.
 
         Request ``user_id`` login data for the time-frame starting at
         ``timestamp_start`` and ending at ``timestamp_end``. Returns

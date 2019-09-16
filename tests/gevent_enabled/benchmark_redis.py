@@ -27,7 +27,7 @@ class TestBenchmark:
             "ENABLED" if socket.socket is gevent.socket.socket else "DISABLED",
         )
 
-        assert socket.socket is gevent.socket.socket  # noqa
+        assert socket.socket is gevent.socket.socket  # noqa: S101
 
         logger.info("Start benchmark")
 
@@ -42,4 +42,4 @@ class TestBenchmark:
 
         graph_api_task.redis_rm_queue()
 
-        assert result == True  # noqa
+        assert result == True  # noqa: S101
