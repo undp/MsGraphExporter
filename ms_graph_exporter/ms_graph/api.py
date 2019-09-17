@@ -116,8 +116,6 @@ class MsGraph:
 
     __logger: Logger = getLogger(__name__)
 
-    # REFACTOR?: requests.Session()
-    #   Decouple from MsGraph, provide as a separate parameter
     __http_session: Optional[Session] = None
 
     __throttling_retries: int = 5
@@ -183,8 +181,6 @@ class MsGraph:
         """Return string representation of class instance."""
         return "MsGraph[{}]".format(self._uuid)
 
-    # REFACTOR?: requests.Session()
-    #   Decouple from MsGraph, provide as a separate parameter
     @property
     def http_session(self) -> Session:
         """Provide access to HTTP session instance.
@@ -496,23 +492,24 @@ class MsGraph:
 
         return msgraph_results
 
-    def get_signins(
+    def _query_api_time_domain(
         self,
-        user_id: str = None,
+        resource: str = None,
+        filter_options: List[Tuple[str, str, str]] = None,
+        filter_join_op: str = "and",
         timestamp_start: datetime = None,
         timestamp_end: datetime = None,
         page_size: int = None,
         cache_enabled: bool = False,
-    ) -> Optional["api_response.MsGraphResponse"]:
-        """Get Azure AD signin log records from MS Graph API.
+    ) -> "api_response.MsGraphResponse":
+        """Query time-domain records from MS Graph API.
 
-        Request ``user_id`` login data for the time-frame starting at
-        ``timestamp_start`` and ending at ``timestamp_end``. Returns
-        paginated response, if ``page_size`` is defined.
+        Request ``resource`` for the time-frame starting at ``timestamp_start`` and
+        ending at ``timestamp_end``. Returns paginated response, if ``page_size`` is
+        defined.
 
         Note
         ----
-        * If ``user_id`` is not defined, retrieves data for all users.
         * Queries all available data up to ``timestamp_end``, if ``timestamp_start``
           is not defined.
         * Without ``timestamp_end`` defined, gets the data up to the moment of the query
@@ -520,8 +517,17 @@ class MsGraph:
 
         Parameters
         ----------
-        user_id
-            Limit results to records with ``userPrincipalName`` equal to ``user_id``.
+        resource
+            Resource/relationship to be queried from MS Graph API endpoint
+            (e.g. ``me/messages``). Expected to start with resource name,
+            but not with ``/``.
+
+        filter_options
+            List of ``("option", "operand", "value")`` tuples to construct OData
+            request filter by joining them with ``filter_join_op`` operator.
+
+        filter_join_op
+            Logic operator (i.e. ``or`` or ``and``) to join ``filter_options`` with.
 
         timestamp_start
             Limit results to records with greater or equal ``createdDateTime`` values.
@@ -585,17 +591,16 @@ class MsGraph:
         :obj:`~ms_graph_exporter.ms_graph.response.MsGraphResponse`
             A response which (depending on the ``page_size``) would either contain
             a full set of returned records, or just the first batch cached and an
-            iterator to get all the subsequent paginated results. If there is a query
-            error, returns :obj:`None`.
+            iterator to get all the subsequent paginated results.
 
         """
-        filter_options: List = []
+        query_filter: List[Tuple[str, str, str]] = []
 
-        if user_id is not None:
-            filter_options.append(("userPrincipalName", "eq", "'{}'".format(user_id)))
+        if filter_options is not None:
+            query_filter = filter_options
 
         if timestamp_start is not None:
-            filter_options.append(
+            query_filter.append(
                 (
                     "createdDateTime",
                     "ge",
@@ -606,7 +611,7 @@ class MsGraph:
             )
 
         if timestamp_end is not None:
-            filter_options.append(
+            query_filter.append(
                 (
                     "createdDateTime",
                     "le",
@@ -616,11 +621,69 @@ class MsGraph:
                 )
             )
 
-        signins: Optional["api_response.MsGraphResponse"] = self._query_api(
-            resource="auditLogs/signIns",
-            odata_filter=self._build_filter(filter_options),
+        response: "api_response.MsGraphResponse" = self._query_api(
+            resource=resource,
+            odata_filter=self._build_filter(query_filter, filter_join_op),
             page_size=page_size,
             cache_enabled=cache_enabled,
         )
 
-        return signins
+        return response
+
+    def get_signins(
+        self,
+        user_id: str = None,
+        timestamp_start: datetime = None,
+        timestamp_end: datetime = None,
+        page_size: int = None,
+        cache_enabled: bool = False,
+    ) -> "api_response.MsGraphResponse":
+        """Get Azure AD signin log records from MS Graph API.
+
+        Request ``user_id`` login data for the time-frame starting at
+        ``timestamp_start`` and ending at ``timestamp_end``. Returns
+        paginated response, if ``page_size`` is defined.
+
+        Parameters
+        ----------
+        user_id
+            Limit results to records with ``userPrincipalName`` equal to ``user_id``.
+
+        timestamp_start
+            Limit results to records with greater or equal ``createdDateTime`` values.
+            See :meth:`_query_api_time_domain` for more details.
+
+        timestamp_end
+            Limit results to records with lower or equal ``createdDateTime`` values.
+
+        page_size
+            Number of records to be returned in a single batch (paginated) response.
+            See :meth:`_query_api_time_domain` for more details.
+
+        cache_enabled
+            Flag indicating if response data should be cached (``True``)
+            or not (``False``).
+
+        Returns
+        -------
+        :obj:`~ms_graph_exporter.ms_graph.response.MsGraphResponse`
+            A response which (depending on the ``page_size``) would either contain
+            a full set of returned records, or just the first batch cached and an
+            iterator to get all the subsequent paginated results.
+
+        """
+        filter_options: List = []
+
+        if user_id is not None:
+            filter_options.append(("userPrincipalName", "eq", "'{}'".format(user_id)))
+
+        response: "api_response.MsGraphResponse" = self._query_api_time_domain(
+            resource="auditLogs/signIns",
+            filter_options=filter_options,
+            timestamp_start=timestamp_start,
+            timestamp_end=timestamp_end,
+            page_size=page_size,
+            cache_enabled=cache_enabled,
+        )
+
+        return response
