@@ -10,6 +10,8 @@ def graph_real(request, variables, logger):
     """Provide MsGraph instance with access to actual MS Graph API."""
     try:
         _graph = MsGraph(
+            # REFACTOR:20190918:01
+            #   get sensitive values from ENV, instead of `variables` fixture
             client_id=variables.get("client_id"),
             client_secret=variables.get("client_secret"),
             tenant=variables.get("tenant"),
