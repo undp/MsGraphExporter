@@ -1,20 +1,20 @@
 # -*- coding: utf-8 -*-
 """Module defines a fixture for :class:`~ms_graph_exporter.ms_graph.api.MsGraph`."""
+from os import environ
+
 import pytest
 
 from ms_graph_exporter.ms_graph.api import MsGraph
 
 
 @pytest.fixture(scope="session")
-def graph_real(request, variables, logger):
+def graph_real(logger):
     """Provide MsGraph instance with access to actual MS Graph API."""
     try:
         _graph = MsGraph(
-            # REFACTOR:20190918:01
-            #   get sensitive values from ENV, instead of `variables` fixture
-            client_id=variables.get("client_id"),
-            client_secret=variables.get("client_secret"),
-            tenant=variables.get("tenant"),
+            client_id=environ.get("GRAPH_CLIENT_ID", "undefined"),
+            client_secret=environ.get("GRAPH_CLIENT_SECRET", "undefined"),
+            tenant=environ.get("GRAPH_TENANT", "undefined"),
         )
 
     except Exception:
