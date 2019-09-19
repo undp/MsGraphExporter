@@ -70,7 +70,6 @@ pytest-dockerc = {version = "^1.0", optional = true}
 pytest-instafail = {version = "^0.4", optional = true}
 pytest-lazy-fixture = {version = "^0.5", optional = true}
 pytest-random-order = {version = "^1.0", optional = true}
-pytest-variables = {version = "^1.8", extras = ["yaml"], optional = true}
 
 [tool.poetry.extras]
 docs = [

@@ -85,7 +85,6 @@ Our tests rely on the following `pytest` plugins:
 * `pytest-instafail` - to report failures while the test run is happening
 * `pytest-lazy-fixture` - to use test fixtures in `pytest.mark.parametrize` decorator
 * `pytest-random-order` - to randomize the order in which tests are run
-* `pytest-variables` - to provide variables to tests (used to provide credentials for tests)
 
 > **NOTE:** We expect 90% or more of the code in this project to be covered with tests, otherwise testing is configured to fail. We try to maintain this test coverage level and would ask you to cover features or bug fixes you introduce with enough test code.
 
@@ -95,9 +94,13 @@ In order to get just the packages to facilitate testing, run:
 poetry install -v --extras=test
 ```
 
-#### Sensitive Variables
+#### Sensitive Credentials
 
-In order to provide credentials for functional tests (e.g. to access MS Graph API), place `app_config.yaml` into the dedicated `instance/` folder which is excluded from commits in `.gitignore`. The config file for testing follows the regular app configuration format.
+In order to provide credentials for functional tests following ENV variables have to be defined:
+
+* `GRAPH_CLIENT_ID` - `ClientId` of the Service Principal with access to MS Graph API.
+* `GRAPH_CLIENT_SECRET` - `ClientSecret` of the Service Principal with access to MS Graph API.
+* `GRAPH_TENANT` - Azure AD `tenant` where the Service Principal with access rights to call the MS Graph API resides.
 
 #### Limitations
 
@@ -128,7 +131,7 @@ tox -e linting
 Or, test the MS Graph API functionality on Python3.6 with:
 
 ```sh
-tox -e py36-ms_graph
+tox -e py36-functional
 ```
 
 ### Commit messages

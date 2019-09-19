@@ -74,7 +74,7 @@ version = "1.3.0"
 category = "main"
 description = "Classes Without Boilerplate"
 name = "attrs"
-optional = false
+optional = true
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 version = "19.1.0"
 
@@ -575,10 +575,9 @@ description = "Core utilities for Python packages"
 name = "packaging"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
-version = "19.1"
+version = "19.2"
 
 [package.dependencies]
-attrs = "*"
 pyparsing = ">=2.0.2"
 six = "*"
 
@@ -836,25 +835,6 @@ version = "1.0.4"
 
 [package.dependencies]
 pytest = ">=3.0.0"
-
-[[package]]
-category = "main"
-description = "pytest plugin for providing variables to tests/fixtures"
-name = "pytest-variables"
-optional = true
-python-versions = "*"
-version = "1.8.0"
-
-[package.dependencies]
-pytest = ">=2.4.2"
-
-[package.dependencies.PyYAML]
-optional = true
-version = "*"
-
-[package.extras]
-hjson = ["hjson"]
-yaml = ["pyyaml"]
 
 [[package]]
 category = "main"
@@ -1204,10 +1184,10 @@ testing = ["pathlib2", "contextlib2", "unittest2"]
 
 [extras]
 docs = ["recommonmark", "sphinx", "sphinx-autodoc-typehints"]
-test = ["pytest", "pytest-benchmark", "pytest-cov", "pytest-dockerc", "pytest-instafail", "pytest-lazy-fixture", "pytest-random-order", "pytest-variables"]
+test = ["pytest", "pytest-benchmark", "pytest-cov", "pytest-dockerc", "pytest-instafail", "pytest-lazy-fixture", "pytest-random-order"]
 
 [metadata]
-content-hash = "da3df96d838863e2077f299fd7c62cd7c77c9d986a7bb42e4c8f6ac7d5c4fb66"
+content-hash = "c7062bd0a635e8e034c519b7d867e9bd2a12bab0503a88495bb175d7d8bc0ffe"
 python-versions = "^3.6"
 
 [metadata.hashes]
@@ -1257,7 +1237,7 @@ kombu = ["55274dc75eb3c3994538b0973a0fadddb236b698a4bc135b8aa4981e0a710b8f", "e5
 markupsafe = ["00bc623926325b26bb9605ae9eae8a215691f33cae5df11ca5424f06f2d1f473", "09027a7803a62ca78792ad89403b1b7a73a01c8cb65909cd876f7fcebd79b161", "09c4b7f37d6c648cb13f9230d847adf22f8171b1ccc4d5682398e77f40309235", "1027c282dad077d0bae18be6794e6b6b8c91d58ed8a8d89a89d59693b9131db5", "24982cc2533820871eba85ba648cd53d8623687ff11cbb805be4ff7b4c971aff", "29872e92839765e546828bb7754a68c418d927cd064fd4708fab9fe9c8bb116b", "43a55c2930bbc139570ac2452adf3d70cdbb3cfe5912c71cdce1c2c6bbd9c5d1", "46c99d2de99945ec5cb54f23c8cd5689f6d7177305ebff350a58ce5f8de1669e", "500d4957e52ddc3351cabf489e79c91c17f6e0899158447047588650b5e69183", "535f6fc4d397c1563d08b88e485c3496cf5784e927af890fb3c3aac7f933ec66", "62fe6c95e3ec8a7fad637b7f3d372c15ec1caa01ab47926cfdf7a75b40e0eac1", "6dd73240d2af64df90aa7c4e7481e23825ea70af4b4922f8ede5b9e35f78a3b1", "717ba8fe3ae9cc0006d7c451f0bb265ee07739daf76355d06366154ee68d221e", "79855e1c5b8da654cf486b830bd42c06e8780cea587384cf6545b7d9ac013a0b", "7c1699dfe0cf8ff607dbdcc1e9b9af1755371f92a68f706051cc8c37d447c905", "88e5fcfb52ee7b911e8bb6d6aa2fd21fbecc674eadd44118a9cc3863f938e735", "8defac2f2ccd6805ebf65f5eeb132adcf2ab57aa11fdf4c0dd5169a004710e7d", "98c7086708b163d425c67c7a91bad6e466bb99d797aa64f965e9d25c12111a5e", "9add70b36c5666a2ed02b43b335fe19002ee5235efd4b8a89bfcf9005bebac0d", "9bf40443012702a1d2070043cb6291650a0841ece432556f784f004937f0f32c", "ade5e387d2ad0d7ebf59146cc00c8044acbd863725f887353a10df825fc8ae21", "b00c1de48212e4cc9603895652c5c410df699856a2853135b3967591e4beebc2", "b1282f8c00509d99fef04d8ba936b156d419be841854fe901d8ae224c59f0be5", "b2051432115498d3562c084a49bba65d97cf251f5a331c64a12ee7e04dacc51b", "ba59edeaa2fc6114428f1637ffff42da1e311e29382d81b339c1817d37ec93c6", "c8716a48d94b06bb3b2524c2b77e055fb313aeb4ea620c8dd03a105574ba704f", "cd5df75523866410809ca100dc9681e301e3c27567cf498077e8551b6d20e42f", "e249096428b3ae81b08327a63a485ad0878de3fb939049038579ac0ef61e17e7"]
 more-itertools = ["409cd48d4db7052af495b09dec721011634af3753ae1ef92d2b32f73a745f832", "92b8c4b06dac4f0611c0729b2f2ede52b2e1bac1ab48f089c7ddc12e26bb60c4"]
 nodeenv = ["ad8259494cf1c9034539f6cced78a1da4840a4b157e23640bc4a0c0546b0cb7a"]
-packaging = ["a7ac867b97fdc07ee80a8058fe4435ccd274ecc3b0ed61d852d7d53055528cf9", "c491ca87294da7cc01902edbe30a5bc6c4c28172b5138ab4e4aa1b9d7bfaeafe"]
+packaging = ["28b924174df7a2fa32c1953825ff29c61e2f5e082343165438812f00d3a7fc47", "d9551545c6d761f3def1677baf08ab2a3ca17c56879e70fecba2fc4dde4ed108"]
 paramiko = ["99f0179bdc176281d21961a003ffdb2ec369daac1a1007241f53374e376576cf", "f4b2edfa0d226b70bd4ca31ea7e389325990283da23465d572ed1f70a7583041"]
 pluggy = ["0db4b7601aae1d35b4a033282da476845aa19185c1e6964b25cf324b5e4ec3e6", "fa5fa1622fa6dd5c030e9cad086fa19ef6a0cf6d7a2d12318e10cb49d6d68f34"]
 pre-commit = ["1d3c0587bda7c4e537a46c27f2c84aa006acc18facf9970bf947df596ce91f3f", "fa78ff96e8e9ac94c748388597693f18b041a181c94a4f039ad20f45287ba44a"]
@@ -1277,7 +1257,6 @@ pytest-dockerc = ["8d706cfa6b8c28feb3a047980df335743758c603a6e8bc4fbd5162aec0eec
 pytest-instafail = ["84c87dd708f00d248fb062cdfaf5ba14bf10ce68ce56d46d58f20aa882a33924"]
 pytest-lazy-fixture = ["282fe28124eb1478e889088b3f616958caf7ac4cfc86f073b9ded6e2e6675c07", "787833087014b65eb622a16f3cc9a89a4ceccc5ba3f97df9ba8bd086e98c19a4"]
 pytest-random-order = ["6b2159342a4c8c10855bc4fc6d65ee890fc614cb2b4ff688979b008a82a0ff52", "72279a7f823969e18b10e438950f58330d17e0fcffb57cbd7929770cd687ecb2"]
-pytest-variables = ["7daf950a9e4680fd7affcbd2a05bb89fb4a61684c446b49a2a41c44c0316802c", "a475fe559bf3a1cfce5a603f7b4112415e7a76716c99394c088f788f75cd276a"]
 python-dateutil = ["7e6584c74aeed623791615e26efd690f29817a27c73085b78e4bad02493df2fb", "c89805f6f4d64db21ed966fda138f8a5ed7a4fdbc1a8ee329ce1b74e3c74da9e"]
 pytz = ["26c0b32e437e54a18161324a2fca3c4b9846b74a8dccddd843113109e1116b32", "c894d57500a4cd2d5c71114aaab77dbab5eabd9022308ce5ac9bb93a60a6f0c7"]
 pywin32 = ["0443e9bb196e72480f50cbddc2cf98fbb858a77d02e281ba79489ea3287b36e9", "09bbe7cdb29eb40ab2e83f7a232eeeedde864be7a0622b70a90f456aad07a234", "0d8e0f47808798d320c983574c36c49db642678902933a210edd40157d206fd0", "0db7c9f4b93528afd080d35912a60be2f86a1d6c49c0a9cf9cedd106eed81ea3", "749e590875051661ecefbd9dfa957a485016de0f25e43f5e70f888ef1e29587b", "779d3e9d4b934f2445d2920c3941416d99af72eb7f7fd57a63576cc8aa540ad6", "7c89d2c11a31c7aaa16dc4d25054d7e0e99d6f6b24193cf62c83850484658c87", "81f7732b662c46274d7d8c411c905d53e71999cba95457a0686467c3ebc745ca", "9db1fb8830bfa99c5bfd335d4482c14db5c6f5028db3b006787ef4200206242b", "bd8d04835db28646d9e07fd0ab7c7b18bd90e89dfdc559e60389179495ef30da", "fc6822a68afd79e97b015985dd455767c72009b81bcd18957068626c43f11e75", "fe6cfc2045931866417740b575231c7e12d69d481643be1493487ad53b089959"]
