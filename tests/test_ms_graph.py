@@ -1,5 +1,5 @@
 """Module implements a functional test case with live MS Graph API endpoint."""
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import pytest
 
@@ -22,30 +22,32 @@ class TestAppFunction:
     )
     @pytest.mark.parametrize("page_size_parameter", [10], ids=["page_10"])
     @pytest.mark.parametrize(
-        "timeframe_parameter",
-        [
-            {
-                "timestamp_start": datetime(2019, 8, 24, 20, 0, 0),
-                "timestamp_end": datetime(2019, 8, 24, 20, 0, 15),
-            }
-        ],
-        ids=["timeframe_short"],
+        "delta_parameter", [10, 30], ids=["delta_10s", "delta_30s"]
     )
     @pytest.mark.usefixtures("graph_real")
     def test_get_signins(
         self,
-        logger,
-        graph_real,
-        user_id_parameter,
-        timeframe_parameter,
-        page_size_parameter,
         cache_parameter,
+        delta_parameter,
+        graph_real,
+        logger,
+        page_size_parameter,
+        user_id_parameter,
     ):
         """Test getting Azure AD signin data."""
+        t_now = datetime.utcnow().replace(microsecond=0)
+
+        t_lag = timedelta(seconds=120)
+        t_sec = timedelta(seconds=1)
+        t_delta = timedelta(seconds=delta_parameter)
+
+        frame_end = t_now - t_lag - t_sec
+        frame_start = frame_end + t_sec - t_delta
+
         signins = graph_real.get_signins(
             user_id=user_id_parameter,
-            timestamp_start=timeframe_parameter["timestamp_start"],
-            timestamp_end=timeframe_parameter["timestamp_end"],
+            timestamp_start=frame_start,
+            timestamp_end=frame_end,
             page_size=page_size_parameter,
             cache_enabled=cache_parameter,
         )
