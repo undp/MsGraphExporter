@@ -131,19 +131,19 @@ stages:
             displayName: install `poetry` $(version.poetry)
 
           - script: pip install 'bump2version==$(version.bump2version)'
-            condition: eq(variables['pypi.repo'], 'testpypi')
-            displayName: "if (pypi.repo == 'testpypi'): install `bump2version` $(version.bump2version)"
+            condition: ne(variables['Build.SourceBranch'], 'refs/heads/master')
+            displayName: "if (branch != 'master'): install `bump2version` $(version.bump2version)"
 
           - script: |
               CUR_VERSION=`bump2version --dry-run --allow-dirty --list release | grep current_version= | sed 's/current_version=//'`
               DEV_TAG=`echo ${BUILD_BUILDNUMBER} | sed 's/\.//'`
               echo "##vso[task.setvariable variable=buildTag]${CUR_VERSION}-dev${DEV_TAG}"
-            condition: eq(variables['pypi.repo'], 'testpypi')
-            displayName: "if (pypi.repo == 'testpypi'): buildTag = ${CUR_VERSION}-dev${DEV_TAG}"
+            condition: ne(variables['Build.SourceBranch'], 'refs/heads/master')
+            displayName: "if (branch != 'master'): buildTag = ${CUR_VERSION}-dev${DEV_TAG}"
 
           - script: bump2version --verbose --allow-dirty --no-commit --no-tag --new-version $BUILDTAG release
-            condition: eq(variables['pypi.repo'], 'testpypi')
-            displayName: "if (pypi.repo == 'testpypi'): bump2version $(buildTag)"
+            condition: ne(variables['Build.SourceBranch'], 'refs/heads/master')
+            displayName: "if (branch != 'master'): bump2version $(buildTag)"
 
           - script: |
               poetry config repositories.pypi $(pypi.ulr.pypi)
