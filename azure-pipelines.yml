@@ -7,6 +7,7 @@ trigger:
       - refs/tags/*
   paths:
     exclude:
+      - docker/docker-compose.yaml
       - docs/*
       - CHANGELOG.md
       - CONTRIBUTING.md

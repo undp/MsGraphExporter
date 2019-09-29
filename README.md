@@ -21,9 +21,10 @@ Follow these instructions to use the application.
 
 ### Installing
 
-`MsGraphExporter` is distributed through the [Python Package Index][PyPIRef]. Run the following command to:
+`MsGraphExporter` is distributed through the [Python Package Index][PyPIRef] as [ms-graph-exporter][PyPIProjRef]. Run the following command to:
 
 [PyPIRef]: https://pypi.org
+[PyPIProjRef]:https://pypi.org/project/ms-graph-exporter/
 
 * install a specific version
 
@@ -48,6 +49,25 @@ Follow these instructions to use the application.
     ```sh
     pip install "ms-graph-exporter[test]"
     ```
+
+`MsGraphExporter` is also distributed as the Alpine-based docker container and published on [Docker Hub][DockerHubRef] as [undp/ms-graph-exporter][DockerHubProjRef].
+
+[DockerHubRef]: https://hub.docker.com/
+[DockerHubProjRef]: https://hub.docker.com/r/undp/ms-graph-exporter
+
+`Service Principal` credentials with correct access rights to `Graph API` must be defined for `docker/docker-compose.yaml`example deployment to work. Following `.env` file should be placed at the root of the project folder, or following ENV variables defined in other way:
+
+```sh
+GRAPH_CLIENT_ID=<clientId>
+GRAPH_CLIENT_SECRET=<clientSecret>
+GRAPH_TENANT=<tenant>
+```
+
+Then, docker deployment could be initiated with:
+
+```sh
+docker-compose --file docker/docker-compose.yaml up
+```
 
 ### Requirements
 

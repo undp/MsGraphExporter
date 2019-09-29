@@ -17,10 +17,7 @@ services:
       - 6379:6379
 
   ms_graph_exporter_beat:
-    build:
-      context: ../
-      dockerfile: docker/Dockerfile
-    image: msgraphexporter:0.1.0-rc.1
+    image: undp/ms-graph-exporter:latest
     command: ["msgraphexporter", "--beat"]
     depends_on:
       - redis
@@ -32,10 +29,10 @@ services:
       - type: tmpfs
         target: /tmp
         tmpfs:
-          size: 1000000  # 1MB
+          size: 1000000 # 1MB
 
   ms_graph_exporter_map:
-    image: msgraphexporter:0.1.0-rc.1
+    image: undp/ms-graph-exporter:latest
     command: ["msgraphexporter", "--map"]
     depends_on:
       - ms_graph_exporter_beat
@@ -47,10 +44,10 @@ services:
       - type: tmpfs
         target: /tmp
         tmpfs:
-          size: 1000000  # 1MB
+          size: 1000000 # 1MB
 
   ms_graph_exporter_fetch:
-    image: msgraphexporter:0.1.0-rc.1
+    image: undp/ms-graph-exporter:latest
     command: ["msgraphexporter", "--fetch"]
     depends_on:
       - ms_graph_exporter_beat
@@ -65,13 +62,13 @@ services:
       - type: tmpfs
         target: /tmp
         tmpfs:
-          size: 1000000  # 1MB
+          size: 1000000 # 1MB
 
   ms_graph_exporter_store:
     build:
       context: ../
       dockerfile: docker/Dockerfile
-    image: msgraphexporter:0.1.0-rc.1
+    image: undp/ms-graph-exporter:latest
     command: ["msgraphexporter", "--store"]
     depends_on:
       - ms_graph_exporter_beat
@@ -84,4 +81,4 @@ services:
       - type: tmpfs
         target: /tmp
         tmpfs:
-          size: 1000000  # 1MB
+          size: 1000000 # 1MB
