@@ -4,7 +4,6 @@ trigger:
       - master
       - develop
       - feature/*
-      - refs/tags/*
   paths:
     exclude:
       - docker/docker-compose.yaml
