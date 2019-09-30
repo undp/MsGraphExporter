@@ -5,6 +5,7 @@ Welcome to MsGraphExporter's documentation!
    :caption: Contents:
 
    README
+   deploy
    CONTRIBUTING
    CHANGELOG
    LICENSE

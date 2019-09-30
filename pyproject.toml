@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ms-graph-exporter"
-version = "0.1.0-rc.2"
+version = "0.1.0-rc.3"
 description = "A distributed Celery application to export time-domain data periodically from Microsoft Graph API into a buffer key-value store."
 
 authors = ["Oleksiy Kuzmenko <oleksiy.kuzmenko@undp.org>"]
@@ -56,23 +56,6 @@ typing = "^3.7"
 #   requests (<2.21)
 requests = "^2.20"
 
-# code-format
-black = {version = "^19.3b0", optional = true}
-blacken-docs = {version = "^0.5.0", optional = true}
-
-# code-lint
-flake8 = {version = "^3.7", optional = true}
-flake8-import-order = {version = "^0.18", optional = true}
-flake8-bandit = {version = "^2.1", optional = true}
-flake8-blind-except = {version = "^0.1", optional = true}
-flake8-bugbear = {version = "^19.8", optional = true}
-flake8-builtins = {version = "^1.4", optional = true}
-flake8-docstrings = {version = "^1.4", optional = true}
-flake8-logging-format = {version = "^0.6", optional = true}
-flake8-mypy = {version = "^17.8", optional = true}
-pep8-naming = {version = "^0.8", optional = true}
-pygments = {version = "^2.4", optional = true}
-
 # docs
 recommonmark = {version = "^0.5.0", optional = true}
 sphinx = {version = "^2.2", optional = true}
@@ -87,29 +70,8 @@ pytest-dockerc = {version = "^1.0", optional = true}
 pytest-instafail = {version = "^0.4", optional = true}
 pytest-lazy-fixture = {version = "^0.5", optional = true}
 pytest-random-order = {version = "^1.0", optional = true}
-pytest-variables = {version = "^1.8", extras = ["yaml"], optional = true}
 
 [tool.poetry.extras]
-code-format = [
-  "black",
-  "blacken-docs",
-]
-
-code-lint = [
-  "flake8",
-  "flake8-import-order",
-  "flake8-bandit",
-  "flake8-blind-except",
-  "flake8-bugbear",
-  "flake8-builtins",
-  "flake8-docstrings",
-  "flake8-logging-format",
-  "flake8-mypy",
-  "pep8-naming",
-  "pygments",
-  "pydocstyle",
-]
-
 docs = [
   "recommonmark",
   "sphinx",

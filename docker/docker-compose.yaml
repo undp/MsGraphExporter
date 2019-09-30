@@ -1,11 +1,11 @@
 version: "3.7"
 
 services:
-  flower:  
+  flower:
     image: mher/flower
     depends_on:
       - redis
-    ports:  
+    ports:
       - 8888:8888
     environment:
       CELERY_BROKER_URL: redis://redis:6379/0
@@ -13,14 +13,11 @@ services:
 
   redis:
     image: redis:5.0.5-alpine
-    ports:  
+    ports:
       - 6379:6379
 
   ms_graph_exporter_beat:
-    build:
-      context: ../
-      dockerfile: docker/Dockerfile
-    image: msgraphexporter:0.1.0-rc.1
+    image: undp/ms-graph-exporter:latest
     command: ["msgraphexporter", "--beat"]
     depends_on:
       - redis
@@ -32,10 +29,10 @@ services:
       - type: tmpfs
         target: /tmp
         tmpfs:
-          size: 1000000  # 1MB
+          size: 1000000 # 1MB
 
   ms_graph_exporter_map:
-    image: msgraphexporter:0.1.0-rc.1
+    image: undp/ms-graph-exporter:latest
     command: ["msgraphexporter", "--map"]
     depends_on:
       - ms_graph_exporter_beat
@@ -47,10 +44,10 @@ services:
       - type: tmpfs
         target: /tmp
         tmpfs:
-          size: 1000000  # 1MB
+          size: 1000000 # 1MB
 
   ms_graph_exporter_fetch:
-    image: msgraphexporter:0.1.0-rc.1
+    image: undp/ms-graph-exporter:latest
     command: ["msgraphexporter", "--fetch"]
     depends_on:
       - ms_graph_exporter_beat
@@ -65,13 +62,13 @@ services:
       - type: tmpfs
         target: /tmp
         tmpfs:
-          size: 1000000  # 1MB
+          size: 1000000 # 1MB
 
   ms_graph_exporter_store:
     build:
       context: ../
       dockerfile: docker/Dockerfile
-    image: msgraphexporter:0.1.0-rc.1
+    image: undp/ms-graph-exporter:latest
     command: ["msgraphexporter", "--store"]
     depends_on:
       - ms_graph_exporter_beat
@@ -84,4 +81,4 @@ services:
       - type: tmpfs
         target: /tmp
         tmpfs:
-          size: 1000000  # 1MB
+          size: 1000000 # 1MB

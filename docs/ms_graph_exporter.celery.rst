@@ -28,7 +28,7 @@ ms\_graph\_exporter.celery.graph\_api\_base module
    :undoc-members:
    :show-inheritance:
 
-   
+
 ms\_graph\_exporter.celery.tasks module
 ---------------------------------------
 

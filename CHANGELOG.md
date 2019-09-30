@@ -1,7 +1,22 @@
 # Changelog
 
+## 0.1.0-rc.3 (2019-09-29)
 
-## 0.1.0-rc.2 (2019-09-12)
+### New
+
+* Add Azure pipeline (fixes #8). [OK-UNDP]
+
+### Changes
+
+* Take creds from ENV vars (fixes #9). [OK-UNDP]
+
+* Time-domain query method. (fixes #7). [OK-UNDP]
+
+### Fix
+
+* Add dev versions to PyPI (fixes #10). [OK-UNDP]
+
+## 0.1.0-rc.2 (2019-09-13)
 
 ### New
 
@@ -12,10 +27,6 @@
   Change `description` in `pyproject.toml` to single-line format to address sdispater/poetry#1372
 
   Apply minor doc fixes.
-
-  !wip
-
-  !wip
 
 ### Fix
 
@@ -38,7 +49,6 @@
 
   Refactoring that allows `MsGraphResponse` to be repeatedly iterated.
 
-
 ## 0.1.0-rc.1 (2019-08-29)
 
 ### New
@@ -54,5 +64,3 @@
 * Implement functional test for MS Graph API. [OK-UNDP]
 
 * Implement MS Graph API module. [OK-UNDP]
-
-

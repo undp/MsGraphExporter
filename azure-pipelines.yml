@@ -1,0 +1,221 @@
+trigger:
+  branches:
+    include:
+      - master
+      - develop
+      - feature/*
+      - refs/tags/*
+  paths:
+    exclude:
+      - docker/docker-compose.yaml
+      - docs/*
+      - CHANGELOG.md
+      - CONTRIBUTING.md
+      - LICENSE.md
+      - README.md
+
+variables:
+  - name: buildAgentOs
+    value: ubuntu-latest
+  - name: imageName
+    value: ms-graph-exporter
+  - group: versions
+  - group: credentials_graph_api
+  - group: credentials_pypi
+
+stages:
+  - stage: Verify
+    jobs:
+      - job: Linting
+        pool:
+          vmImage: $(buildAgentOs)
+
+        steps:
+          - task: UsePythonVersion@0
+            displayName: use python $(version.python)
+            inputs:
+              versionSpec: $(version.python)
+
+          - script: pip install --upgrade pip
+            displayName: upgrade `pip`
+
+          - script: pip install 'poetry==$(version.poetry)'
+            displayName: install `poetry` $(version.poetry)
+
+          - script: poetry config settings.virtualenvs.create false
+            displayName: configure `poetry` to disable virtualenvs
+
+          - script: pip install 'tox==$(version.tox)'
+            displayName: install `tox` $(version.tox)
+
+          - script: tox -e linting
+            displayName: run code linting with `tox`
+
+      - job: FunctionalTesting
+        pool:
+          vmImage: $(buildAgentOs)
+
+        strategy:
+          matrix:
+            Python 3.6:
+              py_env: "3.6"
+            Python 3.7:
+              py_env: "3.7"
+
+        steps:
+          - task: UsePythonVersion@0
+            displayName: use python $(py_env)
+            inputs:
+              versionSpec: $(py_env)
+
+          - script: pip install --upgrade pip
+            displayName: upgrade `pip`
+
+          - script: pip install 'poetry==$(version.poetry)'
+            displayName: install `poetry` $(version.poetry)
+
+          - script: poetry config settings.virtualenvs.create false
+            displayName: configure `poetry` to disable virtualenvs
+
+          - script: pip install 'tox==$(version.tox)'
+            displayName: install `tox` $(version.tox)
+
+          - script: tox -e cov-init,functional,cov-report -- --junitxml=test-functional.xml
+            env:
+              GRAPH_CLIENT_ID: $(clientId)
+              GRAPH_CLIENT_SECRET: $(clientSecret)
+              GRAPH_TENANT: $(tenant)
+            displayName: run tests and code coverage with `tox`
+
+          - task: PublishTestResults@2
+            condition: succeededOrFailed()
+            inputs:
+              testResultsFiles: "**/test-*.xml"
+              mergeTestResults: true
+              testRunTitle: Test results for Python $(py_env)
+            displayName: publish test results
+
+          - task: PublishCodeCoverageResults@1
+            condition: succeededOrFailed()
+            inputs:
+              codeCoverageTool: cobertura
+              summaryFileLocation: coverage.xml
+            displayName: publish coverage artifact
+
+  - stage: Publish
+    dependsOn: Verify
+    jobs:
+      - job: PyPI
+        pool:
+          vmImage: $(buildAgentOs)
+
+        variables:
+          pypi.ulr.pypi: "https://upload.pypi.org/legacy/"
+          pypi.ulr.testpypi: "https://test.pypi.org/legacy/"
+          pypi.repo: pypi
+
+        steps:
+          - script: |
+              echo "##vso[task.setvariable variable=pypi.repo]testpypi"
+            condition: and(ne(variables['Build.SourceBranch'], 'refs/heads/master'), ne(variables['Build.SourceBranch'], 'refs/heads/develop'))
+            displayName: "if (branch != 'master') and (branch != 'develop'): pypi.repo = testpypi"
+
+          - task: UsePythonVersion@0
+            displayName: use python $(version.python)
+            inputs:
+              versionSpec: $(version.python)
+
+          - script: pip install --upgrade pip
+            displayName: upgrade `pip`
+
+          - script: pip install 'poetry==$(version.poetry)'
+            displayName: install `poetry` $(version.poetry)
+
+          - script: pip install 'bump2version==$(version.bump2version)'
+            condition: ne(variables['Build.SourceBranch'], 'refs/heads/master')
+            displayName: "if (branch != 'master'): install `bump2version` $(version.bump2version)"
+
+          - script: |
+              CUR_VERSION=`bump2version --dry-run --allow-dirty --list release | grep current_version= | sed 's/current_version=//'`
+              DEV_TAG=`echo ${BUILD_BUILDNUMBER} | sed 's/\.//'`
+              echo "##vso[task.setvariable variable=buildTag]${CUR_VERSION}-dev${DEV_TAG}"
+            condition: ne(variables['Build.SourceBranch'], 'refs/heads/master')
+            displayName: "if (branch != 'master'): buildTag = ${CUR_VERSION}-dev${DEV_TAG}"
+
+          - script: bump2version --verbose --allow-dirty --no-commit --no-tag --new-version $BUILDTAG release
+            condition: ne(variables['Build.SourceBranch'], 'refs/heads/master')
+            displayName: "if (branch != 'master'): bump2version $(buildTag)"
+
+          - script: |
+              poetry config repositories.pypi $(pypi.ulr.pypi)
+              poetry config repositories.testpypi $(pypi.ulr.testpypi)
+              poetry config http-basic.$(pypi.repo) $(pypi.user) $(pypi.password)
+            displayName: configure PyPI repo and creds for `poetry`
+
+          - script: poetry build
+            displayName: build package with `poetry`
+
+          - script: poetry publish --repository $(pypi.repo)
+            displayName: publish package to PyPI with `poetry`
+
+      - job: AzureContainerRegistry
+        steps:
+          - script: GIT_TAG=`git describe --tags --abbrev=0` && echo "##vso[task.setvariable variable=buildTagGit]$GIT_TAG"
+            displayName: get latest git tag
+
+          - script: echo "##vso[task.setvariable variable=buildTag]$BUILD_BUILDNUMBER"
+            condition: ne(variables['Build.SourceBranch'], 'refs/heads/master')
+            displayName: "if (branch != 'master'): buildTag = $(Build.BuildNumber)"
+
+          - script: echo "##vso[task.setvariable variable=buildTag]$BUILDTAGGIT"
+            condition: eq(variables['Build.SourceBranch'], 'refs/heads/master')
+            displayName: "if (branch == 'master'): buildTag = `git describe --tags --abbrev=0`"
+
+          - task: Docker@2
+            inputs:
+              command: login
+              containerRegistry: AzureContainerRegistry
+            displayName: login to AzureContainerRegistry
+
+          - task: Docker@2
+            inputs:
+              command: buildAndPush
+              containerRegistry: AzureContainerRegistry
+              repository: $(Build.SourceBranchName)/$(imageName)
+              buildContext: "**/.."
+              Dockerfile: docker/Dockerfile
+              tags: |
+                $(buildTag)
+                latest
+            displayName: build and push $(Build.SourceBranchName)/$(imageName)
+
+      - job: DockerHub
+        steps:
+          - script: GIT_TAG=`git describe --tags --abbrev=0` && echo "##vso[task.setvariable variable=buildTagGit]$GIT_TAG"
+            displayName: get latest git tag
+
+          - script: echo "##vso[task.setvariable variable=buildTag]${BUILD_SOURCEBRANCHNAME}.${BUILD_BUILDNUMBER}"
+            condition: ne(variables['Build.SourceBranch'], 'refs/heads/master')
+            displayName: "if (branch != 'master'): buildTag = $(Build.SourceBranchName).$(Build.BuildNumber)"
+
+          - script: echo "##vso[task.setvariable variable=buildTag]$BUILDTAGGIT"
+            condition: eq(variables['Build.SourceBranch'], 'refs/heads/master')
+            displayName: "if (branch == 'master'): buildTag = `git describe --tags --abbrev=0`"
+
+          - task: Docker@2
+            inputs:
+              command: login
+              containerRegistry: DockerHub
+            displayName: login to DockerHub
+
+          - task: Docker@2
+            inputs:
+              command: buildAndPush
+              containerRegistry: DockerHub
+              repository: undp/$(imageName)
+              buildContext: "**/.."
+              Dockerfile: docker/Dockerfile
+              tags: |
+                $(buildTag)
+                latest
+            displayName: build and push undp/$(imageName)

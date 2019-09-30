@@ -54,7 +54,7 @@ USER root
 # copy required dependencies from multi-stage builder
 COPY --from=builder /install /usr/local
 
-# install `supervisord` binaries 
+# install `supervisord` binaries
 RUN set -xe && apk add --update --no-cache \
     supervisor
 

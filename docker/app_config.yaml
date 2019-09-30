@@ -1,13 +1,13 @@
 # By default, no config file is expected by the app. All options are taken either
 # from the command-line interface (CLI) or the execution environment (ENV).
 #
-# CLI options are the same as the config file directives listed below. E.g. 
+# CLI options are the same as the config file directives listed below. E.g.
 # `timelag: 120` corresponds to CLI option `--timelag=120`. Corresponding ENV
-# options are upper-case names of CLI options prefixed with `GRAPH_` (e.g. 
+# options are upper-case names of CLI options prefixed with `GRAPH_` (e.g.
 # `GRAPH_TIMELAG=120`).
 #
 # Config file takes precedence over the CLI, which in turn takes precedence over ENV.
-# 
+#
 # Below, config options are provided with default values
 # and ENV variables in parenthesis.
 ---
