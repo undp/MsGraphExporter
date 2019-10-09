@@ -134,17 +134,12 @@ stages:
             condition: ne(variables['Build.SourceBranch'], 'refs/heads/master')
             displayName: "if (branch != 'master'): install `bump2version` $(version.bump2version)"
 
-          # REFACTOR:20191008:01
-          #   in SemVer version numbers like
-          #   `0.1.0-rc.3` > `0.1.0-rc.3-dev2019100801`
-          #   new pre-release builds must be versioned as
-          #   ${NEXT_VERSION}-dev${DEV_TAG}"
           - script: |
-              CUR_VERSION=`bump2version --dry-run --allow-dirty --list release | grep current_version= | sed 's/current_version=//'`
+              NEW_VERSION=`bump2version --dry-run --allow-dirty --list release | grep new_version= | sed 's/new_version=//'`
               DEV_TAG=`echo ${BUILD_BUILDNUMBER} | sed 's/\.//'`
-              echo "##vso[task.setvariable variable=buildTag]${CUR_VERSION}-dev${DEV_TAG}"
+              echo "##vso[task.setvariable variable=buildTag]${NEW_VERSION}-dev${DEV_TAG}"
             condition: ne(variables['Build.SourceBranch'], 'refs/heads/master')
-            displayName: "if (branch != 'master'): buildTag = ${CUR_VERSION}-dev${DEV_TAG}"
+            displayName: "if (branch != 'master'): buildTag = ${NEW_VERSION}-dev${DEV_TAG}"
 
           - script: bump2version --verbose --allow-dirty --no-commit --no-tag --new-version $BUILDTAG release
             condition: ne(variables['Build.SourceBranch'], 'refs/heads/master')
