@@ -36,14 +36,6 @@ To make our development more efficient and our code more consistent, we cede con
 
 Code examples from Python `docstrings` (documentation embedded into the code) are also formatted using `black` conventions with the help of `blacken-docs` tool.
 
-Also, some IDEs like [Visual Studio Code][VSCodeGitHub] allow `black` formatting action to be performed on each file saving operation, if configured. To have `black` and `blacken-docs` tools for manual usage from the command-line or by your IDE, install them with the following command in your virtual environment:
-
-```sh
-poetry install -v --no-dev --extras=code-format
-```
-
-[VSCodeGitHub]: https://github.com/Microsoft/vscode
-
 `black` formatter is automatically executed prior to committing changes to this repository with the help of `pre-commit` tool.
 
 ### Linting
@@ -64,12 +56,6 @@ This project relies on the `flake8` linter with the following plugins installed:
 [PEP-257]: https://www.python.org/dev/peps/pep-0008/
 
 Similarly to the `black` formatting, linting with `flake8` is executed at every commit by `pre-commit` tool.
-
-If you want to install `flake8` for manual usage or IDE integration, run the following command in your virtual environment:
-
-```sh
-poetry install -v --no-dev --extras=code-lint
-```
 
 ### Testing
 
@@ -197,11 +183,9 @@ You could generate local version of the HTML documentation (placed in `docs/_bui
 tox -e docs
 ```
 
-[RealPythonDocs]: https://realpython.com/documenting-python-code/
-
 ### Debugging
 
-To debug and troubleshoot you could increase logging level in Celery worker with `--loglevel DEBUG`.Also, You could enable log output while running tests by editing `[pytest]` section of `tox.ini` and having `log_cli = true` there. This would allow you to have more details on how tests are executed and address possible issues.
+To debug and troubleshoot you could increase logging level in Celery worker with `--loglevel DEBUG`.Also, You could enable log output while running tests by editing `[pytest]` section of `tox.ini` and having `log_cli = true` there or running `pytest` with option `--log-cli-level=INFO`. This would allow you to have more details on how tests are executed and address possible issues.
 
 ## Pull Request Process
 
