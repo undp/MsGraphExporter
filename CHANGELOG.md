@@ -1,6 +1,16 @@
 # Changelog
 
-## 0.1.0-rc.3 (2019-09-29)
+## 0.1.0-rc.4 (2019-10-09)
+
+### Changes
+
+* `pytest` scripts discovery (fixes #11). [OK-UNDP]
+
+### Fix
+
+* Correct versioning in PyPI (fixes #12). [OK-UNDP]
+
+## 0.1.0-rc.3 (2019-09-30)
 
 ### New
 
